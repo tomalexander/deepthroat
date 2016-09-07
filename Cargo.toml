@@ -1,0 +1,11 @@
+[package]
+authors = ["Tom Alexander <craftkiller@gmail.com>"]
+name = "deepthroat"
+version = "0.1.0"
+
+[dependencies]
+rusqlite = "0.7.3"
+serde = "0.8.7"
+serde_json = "0.8.1"
+serde_macros = "0.8.7"
+time = "0.1.35"
