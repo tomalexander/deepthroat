@@ -1,6 +1,7 @@
 use rusqlite::{Connection, SqliteConnection};
 use std::path::Path;
-use time;
+use chrono;
+use chrono::TimeZone;
 
 #[derive(Debug)]
 pub struct DbRoom {
@@ -23,12 +24,11 @@ pub struct DbMessage {
 }
 
 impl DbMessage {
-    pub fn get_date_string(&self) {
-        // let now = time::Timespec {
-        //     sec: self.date,
-        //     nsec: 0
-        // };
-        // let now_time = time::at_utc(now);
+    pub fn get_date_string(&self) -> String {
+        let tz: chrono::FixedOffset = chrono::FixedOffset::west(5 * 3600); // Approximately eastern time
+        let naive_time: chrono::NaiveDateTime = chrono::NaiveDateTime::from_num_seconds_from_unix_epoch(self.date, 0);
+        let eastern_time: chrono::DateTime<chrono::FixedOffset> = tz.from_utc_datetime(&naive_time);
+        eastern_time.format("%Y%m%d").to_string()
     }
 }
 
