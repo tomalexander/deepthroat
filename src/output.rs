@@ -9,7 +9,7 @@ pub struct RoomDay {
     messages: Vec<db::DbMessage>,
 }
 
-pub fn process_messages_for_room(room: &db::DbRoom, messages: Vec<db::DbMessage>) {
+pub fn process_messages_for_room(room: &db::DbRoom, messages: Vec<db::DbMessage>) -> Vec<RoomDay> {
     let grouped_by_date = group_messages_by_date(messages);
     let mut room_days: Vec<RoomDay> = Vec::new();
     let mut previous_date: Option<String> = None;
@@ -28,10 +28,7 @@ pub fn process_messages_for_room(room: &db::DbRoom, messages: Vec<db::DbMessage>
         });
         previous_date = Some(date);
     }
-    println!("Room: {}", room.id);
-    for room_day in room_days {
-        println!("{:?}", room_day);
-    }
+    room_days
 }
 
 fn group_messages_by_date(messages: Vec<db::DbMessage>) -> BTreeMap<String, Vec<db::DbMessage>> {
