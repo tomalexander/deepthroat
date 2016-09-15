@@ -37,8 +37,6 @@ pub struct Room {
 pub struct RoomDay {
     current_date: String,
     messages: Vec<Message>,
-    // previous_date: Option<&RoomDay>,
-    // next_date: Option<&RoomDay>,
 }
 
 impl Context {
@@ -67,11 +65,17 @@ fn generate_room_list(connection: &Connection) -> Vec<Room> {
         }
     }).unwrap();
     let db_rooms: Vec<DbRoom> = ids.map(|room| room.unwrap()).collect();
-    
-    Vec::new()
+    let full_rooms: Vec<Room> = db_rooms.into_iter().map(|room| {
+        let room_days = get_messages_for_room(connection, &room);
+        Room {
+            db_room: room,
+            days: room_days,
+        }
+    }).collect();
+    full_rooms
 }
 
-fn get_messages_for_room(connection: &Connection, room: &DbRoom) {
+fn get_messages_for_room(connection: &Connection, room: &DbRoom) -> Vec<RoomDay> {
     let mut stmt = connection.prepare("SELECT room_id, id, color, date, sender, message, message_format FROM messages WHERE room_id=$1 ORDER BY date;").unwrap();
     let messages = stmt.query_map(&[&room.id], |row| {
         DbMessage {
@@ -86,11 +90,22 @@ fn get_messages_for_room(connection: &Connection, room: &DbRoom) {
     }).unwrap();
 
     let messages: Vec<DbMessage> = messages.map(|message| message.unwrap()).collect();
-    let grouped = group_messages_by_date(messages);
+    let wrapped_messages: Vec<Message> = messages.into_iter().map(|message| Message {
+        db_message: message,
+    }).collect();
+    let grouped = group_messages_by_date(wrapped_messages);
+    let mut ret: Vec<RoomDay> = Vec::new();
+    for (date, messages_that_day) in grouped {
+        ret.push(RoomDay {
+            current_date: date,
+            messages: messages_that_day,
+        });
+    }
+    ret
 }
 
-fn group_messages_by_date(messages: Vec<DbMessage>) -> BTreeMap<String, Vec<DbMessage>> {
-    let mut ret: BTreeMap<String, Vec<DbMessage>> = BTreeMap::new();
+fn group_messages_by_date(messages: Vec<Message>) -> BTreeMap<String, Vec<Message>> {
+    let mut ret: BTreeMap<String, Vec<Message>> = BTreeMap::new();
     for msg in messages {
         let key: String = msg.get_date_string();
         ret.entry(key).or_insert(Vec::new()).push(msg);
@@ -98,10 +113,10 @@ fn group_messages_by_date(messages: Vec<DbMessage>) -> BTreeMap<String, Vec<DbMe
     ret
 }
 
-impl DbMessage {
+impl Message {
     pub fn get_date_string(&self) -> String {
         let tz: chrono::FixedOffset = chrono::FixedOffset::west(5 * 3600); // Approximately eastern time
-        let naive_time: chrono::NaiveDateTime = chrono::NaiveDateTime::from_num_seconds_from_unix_epoch(self.date, 0);
+        let naive_time: chrono::NaiveDateTime = chrono::NaiveDateTime::from_num_seconds_from_unix_epoch(self.db_message.date, 0);
         let eastern_time: chrono::DateTime<chrono::FixedOffset> = tz.from_utc_datetime(&naive_time);
         eastern_time.format("%Y%m%d").to_string()
     }
