@@ -16,7 +16,7 @@ pub struct MessageListContext {
 
 impl MessageContext {
     pub fn new(message: &db::Message) -> MessageContext {
-        let date: String = message.get_date_string();
+        let date: String = message.get_date_time_string();
         let body: String = match message.get_body() {
             Some(body) => body.to_owned(),
             None => "".to_owned(),

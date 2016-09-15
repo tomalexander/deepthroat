@@ -3,9 +3,11 @@
     <h1>{room_name} - {date}</h1>
     <table>
       {#messages}
-        <td>{sender}</td>
-        <td>{date}</td>
-        <td>{body}</td>
+        <tr>
+          <td>{sender}</td>
+          <td>{date}</td>
+          <td>{body}</td>
+        </tr>
       {/messages}
     </table>
   </body>

@@ -151,6 +151,13 @@ impl Message {
         eastern_time.format("%Y%m%d").to_string()
     }
 
+    pub fn get_date_time_string(&self) -> String {
+        let tz: chrono::FixedOffset = chrono::FixedOffset::west(5 * 3600); // Approximately eastern time
+        let naive_time: chrono::NaiveDateTime = chrono::NaiveDateTime::from_num_seconds_from_unix_epoch(self.db_message.date, 0);
+        let eastern_time: chrono::DateTime<chrono::FixedOffset> = tz.from_utc_datetime(&naive_time);
+        eastern_time.format("%Y%m%d %H:%M:%S").to_string()
+    }
+
     pub fn get_sender(&self) -> &str {
         &self.db_message.sender
     }
