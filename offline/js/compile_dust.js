@@ -1,6 +1,9 @@
-var compiled = dust.compile(template, 'compiled');
-dust.loadSource(compiled);
-dust.render('compiled', context, function(err, out) {
+/**
+ * You are expected to load dust, register the templates, and set the following variables:
+ *   - templateName
+ *   - context
+ */
+dust.render(templateName, context, function(err, out) {
   if (err) {
     console.error(err);
   }

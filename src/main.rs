@@ -21,6 +21,7 @@ struct TestContext {
 
 fn main() {
     let dust_engine: output::DustEngine = output::DustEngine::new();
+    
     // let conn = db_old::open_db();
     // let rooms = db_old::get_rooms(&conn);
     // output_old::generate_room_list_page(&rooms);
