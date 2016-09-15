@@ -1,0 +1,8 @@
+<html>
+  <body>
+    <h1>Date List</h1>
+    {#dates}
+      <p><a href="{link}">{date}</a></p>
+    {/dates}
+  </body>
+</html>

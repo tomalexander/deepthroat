@@ -23,7 +23,7 @@ impl RoomListContext {
 
 impl RoomContext {
     pub fn new(room: &db::DbRoom) -> RoomContext {
-        let link: String = format!("/{}", hierarchy::get_room_path(room).to_str().unwrap());
+        let link: String = hierarchy::get_room_link(room).to_str().unwrap().to_owned();
         RoomContext {
             name: room.name.clone(),
             link: link,

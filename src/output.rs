@@ -3,15 +3,17 @@ use std::collections::BTreeMap;
 use std::fs;
 use hierarchy;
 use room_list;
+use date_list;
 use dust_executor;
 use std::io::Write;
 
 static ROOM_LIST_TEMPLATE: &'static str = include_str!("../offline/dust/room_list.dust");
+static DATE_LIST_TEMPLATE: &'static str = include_str!("../offline/dust/date_list.dust");
 
 #[derive(Debug)]
 pub struct RoomDay {
     previous_date: Option<String>,
-    current_date: String,
+    pub current_date: String,
     next_date: Option<String>,
     messages: Vec<db::DbMessage>,
 }
@@ -51,8 +53,20 @@ pub fn generate_room_list_page(rooms: &Vec<db::DbRoom>) {
     let output_path = hierarchy::get_room_list_path();
     fs::create_dir_all(&output_path);
     let output_index = hierarchy::get_room_list_index();
+    println!("Generating {}", output_index.to_str().unwrap());
     let context: room_list::RoomListContext = room_list::RoomListContext::new(rooms);
     let rendered = dust_executor::render_template(&context, ROOM_LIST_TEMPLATE);
     let mut f = fs::File::create(&output_index).unwrap();
+    f.write_all(rendered.as_bytes()).unwrap();
+}
+
+pub fn generate_date_list_page(room: &db::DbRoom, grouped_by_day: &Vec<RoomDay>) {
+    let room_path = hierarchy::get_room_path(room);
+    fs::create_dir_all(&room_path);
+    let date_index = hierarchy::get_room_index(room);
+    println!("Generating {}", date_index.to_str().unwrap());
+    let context = date_list::DateListContext::new(room, grouped_by_day);
+    let rendered = dust_executor::render_template(&context, DATE_LIST_TEMPLATE);
+    let mut f = fs::File::create(&date_index).unwrap();
     f.write_all(rendered.as_bytes()).unwrap();
 }
