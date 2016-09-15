@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use db;
+use db_old;
 use output_old;
 
 fn get_base() -> PathBuf {
@@ -19,26 +19,26 @@ pub fn get_room_list_index() -> PathBuf {
     ret
 }
 
-pub fn get_room_path(room: &db::DbRoom) -> PathBuf {
+pub fn get_room_path(room: &db_old::DbRoom) -> PathBuf {
     let mut ret = get_base();
     ret.push("rooms");
     ret.push(room.id.to_string());
     ret
 }
 
-pub fn get_room_index(room: &db::DbRoom) -> PathBuf {
+pub fn get_room_index(room: &db_old::DbRoom) -> PathBuf {
     let mut ret = get_room_path(room);
     ret.push("index.html");
     ret
 }
 
-pub fn get_room_link(room: &db::DbRoom) -> PathBuf {
+pub fn get_room_link(room: &db_old::DbRoom) -> PathBuf {
     let mut ret = PathBuf::from("/rooms");
     ret.push(room.id.to_string());
     ret
 }
 
-pub fn get_room_day_link(room: &db::DbRoom, room_day: &output_old::RoomDay) -> PathBuf {
+pub fn get_room_day_link(room: &db_old::DbRoom, room_day: &output_old::RoomDay) -> PathBuf {
     let mut ret = get_room_link(room);
     ret.push(&room_day.current_date);
     ret

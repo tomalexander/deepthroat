@@ -1,4 +1,4 @@
-use db;
+use db_old;
 use std::collections::BTreeMap;
 use std::fs;
 use hierarchy;
@@ -14,10 +14,10 @@ pub struct RoomDay {
     previous_date: Option<String>,
     pub current_date: String,
     next_date: Option<String>,
-    messages: Vec<db::DbMessage>,
+    messages: Vec<db_old::DbMessage>,
 }
 
-pub fn process_messages_for_room(room: &db::DbRoom, messages: Vec<db::DbMessage>) -> Vec<RoomDay> {
+pub fn process_messages_for_room(room: &db_old::DbRoom, messages: Vec<db_old::DbMessage>) -> Vec<RoomDay> {
     let grouped_by_date = group_messages_by_date(messages);
     let mut room_days: Vec<RoomDay> = Vec::new();
     let mut previous_date: Option<String> = None;
@@ -39,8 +39,8 @@ pub fn process_messages_for_room(room: &db::DbRoom, messages: Vec<db::DbMessage>
     room_days
 }
 
-fn group_messages_by_date(messages: Vec<db::DbMessage>) -> BTreeMap<String, Vec<db::DbMessage>> {
-    let mut ret: BTreeMap<String, Vec<db::DbMessage>> = BTreeMap::new();
+fn group_messages_by_date(messages: Vec<db_old::DbMessage>) -> BTreeMap<String, Vec<db_old::DbMessage>> {
+    let mut ret: BTreeMap<String, Vec<db_old::DbMessage>> = BTreeMap::new();
     for msg in messages {
         let key: String = msg.get_date_string();
         ret.entry(key).or_insert(Vec::new()).push(msg);
@@ -48,7 +48,7 @@ fn group_messages_by_date(messages: Vec<db::DbMessage>) -> BTreeMap<String, Vec<
     ret
 }
 
-pub fn generate_room_list_page(rooms: &Vec<db::DbRoom>) {
+pub fn generate_room_list_page(rooms: &Vec<db_old::DbRoom>) {
     let output_path = hierarchy::get_room_list_path();
     fs::create_dir_all(&output_path);
     let output_index = hierarchy::get_room_list_index();
@@ -59,7 +59,7 @@ pub fn generate_room_list_page(rooms: &Vec<db::DbRoom>) {
     f.write_all(rendered.as_bytes()).unwrap();
 }
 
-pub fn generate_date_list_page(room: &db::DbRoom, grouped_by_day: &Vec<RoomDay>) {
+pub fn generate_date_list_page(room: &db_old::DbRoom, grouped_by_day: &Vec<RoomDay>) {
     let room_path = hierarchy::get_room_path(room);
     fs::create_dir_all(&room_path);
     let date_index = hierarchy::get_room_index(room);

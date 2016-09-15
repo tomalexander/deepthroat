@@ -1,5 +1,5 @@
 use hierarchy;
-use db;
+use db_old;
 
 #[derive(Serialize)]
 struct RoomContext {
@@ -13,7 +13,7 @@ pub struct RoomListContext {
 }
 
 impl RoomListContext {
-    pub fn new(db_rooms: &Vec<db::DbRoom>) -> RoomListContext {
+    pub fn new(db_rooms: &Vec<db_old::DbRoom>) -> RoomListContext {
         let list: Vec<RoomContext> = db_rooms.iter().map(RoomContext::new).collect();
         RoomListContext {
             rooms: list,
@@ -22,7 +22,7 @@ impl RoomListContext {
 }
 
 impl RoomContext {
-    pub fn new(room: &db::DbRoom) -> RoomContext {
+    pub fn new(room: &db_old::DbRoom) -> RoomContext {
         let link: String = hierarchy::get_room_link(room).to_str().unwrap().to_owned();
         RoomContext {
             name: room.name.clone(),
