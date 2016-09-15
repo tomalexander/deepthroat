@@ -2,8 +2,7 @@ use db;
 use std::collections::BTreeMap;
 use std::fs;
 use hierarchy;
-use room_list;
-use date_list;
+use output;
 use dust_executor;
 use std::io::Write;
 
@@ -54,7 +53,7 @@ pub fn generate_room_list_page(rooms: &Vec<db::DbRoom>) {
     fs::create_dir_all(&output_path);
     let output_index = hierarchy::get_room_list_index();
     println!("Generating {}", output_index.to_str().unwrap());
-    let context: room_list::RoomListContext = room_list::RoomListContext::new(rooms);
+    let context: output::RoomListContext = output::RoomListContext::new(rooms);
     let rendered = dust_executor::render_template(&context, ROOM_LIST_TEMPLATE);
     let mut f = fs::File::create(&output_index).unwrap();
     f.write_all(rendered.as_bytes()).unwrap();
@@ -65,7 +64,7 @@ pub fn generate_date_list_page(room: &db::DbRoom, grouped_by_day: &Vec<RoomDay>)
     fs::create_dir_all(&room_path);
     let date_index = hierarchy::get_room_index(room);
     println!("Generating {}", date_index.to_str().unwrap());
-    let context = date_list::DateListContext::new(room, grouped_by_day);
+    let context = output::DateListContext::new(room, grouped_by_day);
     let rendered = dust_executor::render_template(&context, DATE_LIST_TEMPLATE);
     let mut f = fs::File::create(&date_index).unwrap();
     f.write_all(rendered.as_bytes()).unwrap();

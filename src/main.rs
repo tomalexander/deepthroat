@@ -10,8 +10,7 @@ pub mod db;
 pub mod hierarchy;
 pub mod output_old;
 pub mod dust_executor;
-pub mod room_list;
-pub mod date_list;
+pub mod output;
 
 #[derive(Serialize)]
 struct TestContext {
