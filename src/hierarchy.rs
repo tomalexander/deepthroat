@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
 use db;
-use output;
+use output_old;
 
 fn get_base() -> PathBuf {
     PathBuf::from("output")
@@ -38,7 +38,7 @@ pub fn get_room_link(room: &db::DbRoom) -> PathBuf {
     ret
 }
 
-pub fn get_room_day_link(room: &db::DbRoom, room_day: &output::RoomDay) -> PathBuf {
+pub fn get_room_day_link(room: &db::DbRoom, room_day: &output_old::RoomDay) -> PathBuf {
     let mut ret = get_room_link(room);
     ret.push(&room_day.current_date);
     ret

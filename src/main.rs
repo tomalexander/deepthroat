@@ -8,7 +8,7 @@ extern crate serde_json;
 
 pub mod db;
 pub mod hierarchy;
-pub mod output;
+pub mod output_old;
 pub mod dust_executor;
 pub mod room_list;
 pub mod date_list;
@@ -22,11 +22,11 @@ struct TestContext {
 fn main() {
     let conn = db::open_db();
     let rooms = db::get_rooms(&conn);
-    output::generate_room_list_page(&rooms);
+    output_old::generate_room_list_page(&rooms);
     for room in rooms {
         let messages = db::get_messages_for_room(&conn, &room);
-        let grouped_by_day: Vec<output::RoomDay> = output::process_messages_for_room(&room, messages);
-        output::generate_date_list_page(&room, &grouped_by_day);
+        let grouped_by_day: Vec<output_old::RoomDay> = output_old::process_messages_for_room(&room, messages);
+        output_old::generate_date_list_page(&room, &grouped_by_day);
     }
     let context = TestContext {
         val: "test".to_owned(),
