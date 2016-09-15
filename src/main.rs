@@ -6,6 +6,7 @@ extern crate chrono;
 extern crate serde;
 extern crate serde_json;
 
+pub mod db;
 pub mod db_old;
 pub mod hierarchy;
 pub mod output_old;
