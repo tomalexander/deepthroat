@@ -5,7 +5,7 @@ use std::io::Write;
 use std::io::Read;
 
 static DUST_FULL_JS: &'static str = include_str!("../3rdparty/dust/dust-full.js");
-static NAIVE_SHIM_JS: &'static str = include_str!("../site/js/compile_dust.js");
+static NAIVE_SHIM_JS: &'static str = include_str!("../offline/js/compile_dust.js");
 
 pub fn render_template<T: Serialize>(context: &T, template: &str) -> String {
     let context_string = serde_json::to_string(context).unwrap();

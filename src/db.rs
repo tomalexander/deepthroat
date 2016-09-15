@@ -7,7 +7,7 @@ use chrono::TimeZone;
 pub struct DbRoom {
     pub id: i32,
     is_archived: bool,
-    name: String,
+    pub name: String,
     privacy: String,
     version: String,
 }

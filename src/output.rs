@@ -1,5 +1,12 @@
 use db;
 use std::collections::BTreeMap;
+use std::fs;
+use hierarchy;
+use room_list;
+use dust_executor;
+use std::io::Write;
+
+static ROOM_LIST_TEMPLATE: &'static str = include_str!("../offline/dust/room_list.dust");
 
 #[derive(Debug)]
 pub struct RoomDay {
@@ -38,4 +45,14 @@ fn group_messages_by_date(messages: Vec<db::DbMessage>) -> BTreeMap<String, Vec<
         ret.entry(key).or_insert(Vec::new()).push(msg);
     }
     ret
+}
+
+pub fn generate_room_list_page(rooms: &Vec<db::DbRoom>) {
+    let output_path = hierarchy::get_room_list_path();
+    fs::create_dir_all(&output_path);
+    let output_index = hierarchy::get_room_list_index();
+    let context: room_list::RoomListContext = room_list::RoomListContext::new(rooms);
+    let rendered = dust_executor::render_template(&context, ROOM_LIST_TEMPLATE);
+    let mut f = fs::File::create(&output_index).unwrap();
+    f.write_all(rendered.as_bytes()).unwrap();
 }

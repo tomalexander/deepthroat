@@ -10,6 +10,7 @@ pub mod db;
 pub mod hierarchy;
 pub mod output;
 pub mod dust_executor;
+pub mod room_list;
 
 #[derive(Serialize)]
 struct TestContext {
@@ -18,12 +19,14 @@ struct TestContext {
 }
 
 fn main() {
-    // let conn = db::open_db();
-    // let rooms = db::get_rooms(&conn);
-    // for room in rooms {
-    //     let messages = db::get_messages_for_room(&conn, &room);
-    //     output::process_messages_for_room(&room, messages);
-    // }
+    let conn = db::open_db();
+    let rooms = db::get_rooms(&conn);
+    output::generate_room_list_page(&rooms);
+    for room in rooms {
+        // let messages = db::get_messages_for_room(&conn, &room);
+        // output::process_messages_for_room(&room, messages);
+        
+    }
     let context = TestContext {
         val: "test".to_owned(),
         otherval: "other".to_owned(),

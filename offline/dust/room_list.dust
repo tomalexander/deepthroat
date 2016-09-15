@@ -1,0 +1,8 @@
+<html>
+  <body>
+    <h1>Room List</h1>
+    {#rooms}
+      <p><a href="{link}">{name}</a></p>
+    {/rooms}
+  </body>
+</html>
