@@ -28,4 +28,15 @@ impl PageWriter {
         let mut f = fs::File::create(&output_index).unwrap();
         f.write_all(rendered.as_bytes()).unwrap();
     }
+
+    pub fn generate_message_list(&self, engine: &super::DustEngine, room: &db::Room, room_day: &db::RoomDay) {
+        let paths: db::OutputDateList = room_day.path_date_list();
+        fs::create_dir_all(&paths.get_path());
+        let output_index = paths.get_index();
+        println!("Generating {}", output_index.to_str().unwrap());
+        let dust_context = super::MessageListContext::new(room, room_day);
+        let rendered = engine.render_template(&dust_context, "message_list");
+        let mut f = fs::File::create(&output_index).unwrap();
+        f.write_all(rendered.as_bytes()).unwrap();
+    }
 }

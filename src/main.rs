@@ -16,6 +16,9 @@ fn main() {
     page_writer.generate_room_list(&dust_engine, &data);
     for room in data.get_rooms() {
         page_writer.generate_date_list(&dust_engine, room);
+        for day in &room.days {
+            page_writer.generate_message_list(&dust_engine, room, day);
+        }
     }
 }
 

@@ -38,7 +38,7 @@ pub struct Room {
 pub struct RoomDay {
     room_id: i32,
     pub current_date: String,
-    messages: Vec<Message>,
+    pub messages: Vec<Message>,
 }
 
 impl Context {
@@ -149,6 +149,14 @@ impl Message {
         let naive_time: chrono::NaiveDateTime = chrono::NaiveDateTime::from_num_seconds_from_unix_epoch(self.db_message.date, 0);
         let eastern_time: chrono::DateTime<chrono::FixedOffset> = tz.from_utc_datetime(&naive_time);
         eastern_time.format("%Y%m%d").to_string()
+    }
+
+    pub fn get_sender(&self) -> &str {
+        &self.db_message.sender
+    }
+
+    pub fn get_body(&self) -> Option<&String> {
+        self.db_message.message.as_ref()
     }
 }
 

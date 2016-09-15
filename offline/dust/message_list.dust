@@ -1,0 +1,12 @@
+<html>
+  <body>
+    <h1>{room_name} - {date}</h1>
+    <table>
+      {#messages}
+        <td>{sender}</td>
+        <td>{date}</td>
+        <td>{body}</td>
+      {/messages}
+    </table>
+  </body>
+</html>
