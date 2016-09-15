@@ -1,6 +1,4 @@
-use hierarchy;
-use db_old;
-use output_old;
+use db;
 
 #[derive(Serialize)]
 struct DateContext {
@@ -14,8 +12,10 @@ pub struct DateListContext {
 }
 
 impl DateListContext {
-    pub fn new(room: &db_old::DbRoom, grouped_by_day: &Vec<output_old::RoomDay>) -> DateListContext {
-        let list: Vec<DateContext> = grouped_by_day.iter().map(|room_day| DateContext::new(room, room_day)).collect();
+    pub fn new(room: &db::Room) -> DateListContext {
+        let list: Vec<DateContext> = room.days.iter().map(|day| {
+            DateContext::new(room, day)
+        }).collect();
         DateListContext {
             dates: list,
         }
@@ -23,8 +23,8 @@ impl DateListContext {
 }
 
 impl DateContext {
-    pub fn new(room: &db_old::DbRoom, room_day: &output_old::RoomDay) -> DateContext {
-        let link: String = hierarchy::get_room_day_link(room, room_day).to_str().unwrap().to_owned();
+    pub fn new(room: &db::Room, room_day: &db::RoomDay) -> DateContext {
+        let link = room_day.path_date_list().get_link().to_str().unwrap().to_owned();
         DateContext {
             date: room_day.current_date.clone(),
             link: link,

@@ -1,7 +1,8 @@
 use rusqlite::{Connection, SqliteConnection};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use chrono::{self, TimeZone};
 use std::collections::BTreeMap;
+use super::{OutputRoomList, OutputRoom, OutputDateList};
 
 pub struct Context {
     rooms: Vec<Room>,
@@ -31,11 +32,12 @@ pub struct Message {
 
 pub struct Room {
     db_room: DbRoom,
-    days: Vec<RoomDay>,
+    pub days: Vec<RoomDay>,
 }
 
 pub struct RoomDay {
-    current_date: String,
+    room_id: i32,
+    pub current_date: String,
     messages: Vec<Message>,
 }
 
@@ -50,6 +52,33 @@ impl Context {
 
     pub fn get_rooms(&self) -> &Vec<Room> {
         &self.rooms
+    }
+
+    pub fn path_room_list(&self) -> OutputRoomList {
+        OutputRoomList {
+            
+        }
+    }
+}
+
+impl Room {
+    pub fn get_name(&self) -> &str {
+        &self.db_room.name
+    }
+    
+    pub fn path_room(&self) -> OutputRoom {
+        OutputRoom {
+            room_id: self.db_room.id,
+        }
+    }
+}
+
+impl RoomDay {
+    pub fn path_date_list(&self) -> OutputDateList {
+        OutputDateList {
+            room_id: self.room_id,
+            date: self.current_date.clone(),
+        }
     }
 }
 
@@ -97,6 +126,7 @@ fn get_messages_for_room(connection: &Connection, room: &DbRoom) -> Vec<RoomDay>
     let mut ret: Vec<RoomDay> = Vec::new();
     for (date, messages_that_day) in grouped {
         ret.push(RoomDay {
+            room_id: room.id,
             current_date: date,
             messages: messages_that_day,
         });
@@ -120,4 +150,8 @@ impl Message {
         let eastern_time: chrono::DateTime<chrono::FixedOffset> = tz.from_utc_datetime(&naive_time);
         eastern_time.format("%Y%m%d").to_string()
     }
+}
+
+fn get_base() -> PathBuf {
+    PathBuf::from("output")
 }
