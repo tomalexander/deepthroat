@@ -40,28 +40,35 @@ impl DustEngine {
         }).collect();
         let quoted_template_name: String = serde_json::to_string(&template_name).unwrap();
 
-        let process = Command::new("node")
+        let mut process = Command::new("node")
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
             .spawn()
             .expect("Failed to launch node");
 
         {
-            let mut stdin: ChildStdin = process.stdin.unwrap();
-            stdin.write_all(DUST_FULL_JS.as_bytes()).expect("Failed to write to node's stdin");
-            for template in quoted_templates {
-                stdin.write_all(template.as_bytes()).expect("Failed to write to node's stdin");
-            }
+            match process.stdin {
+                None => panic!("No stdin to node"),
+                Some(ref mut stdin) => {
+                    stdin.write_all(DUST_FULL_JS.as_bytes()).expect("Failed to write to node's stdin");
+                    for template in quoted_templates {
+                        stdin.write_all(template.as_bytes()).expect("Failed to write to node's stdin");
+                    }
 
-            stdin.write_all(format!("var templateName = {};", quoted_template_name).as_bytes()).expect("Failed to write to node's stdin");
-            let assign_context = format!("var context = {};", context_string);
-            stdin.write_all(assign_context.as_bytes()).expect("Failed to write to node's stdin");
-            stdin.write_all(NAIVE_SHIM_JS.as_bytes()).expect("Failed to write to node's stdin");
+                    stdin.write_all(format!("var templateName = {};", quoted_template_name).as_bytes()).expect("Failed to write to node's stdin");
+                    let assign_context = format!("var context = {};", context_string);
+                    stdin.write_all(assign_context.as_bytes()).expect("Failed to write to node's stdin");
+                    stdin.write_all(NAIVE_SHIM_JS.as_bytes()).expect("Failed to write to node's stdin");
+                }
+            }
         }
 
-        let mut out = String::new();
-        process.stdout.unwrap().read_to_string(&mut out).expect("Failed to read from node's stdout");
-        out
+        let output = process.wait_with_output().expect("Failed to wait on node");
+        if ! output.stderr.is_empty() {
+            panic!("stderr not empty {}", String::from_utf8_lossy(&output.stderr));
+        }
+        String::from_utf8_lossy(&output.stdout).into_owned()
+
     }
 }
 
